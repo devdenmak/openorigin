@@ -23,23 +23,20 @@ export async function createModel(
     const uploadedImageIds: number[] = []
 
     if (body.images && body.images.length > 0) {
-      for (const image of body.images) {
-        if (!image.file) {
-          if (image.id) {
-            uploadedImageIds.push(Number(image.id))
-          }
+      const existingImages = (body.images as IFile[]).filter((img) => !img.file && img.id)
+      const newImages = (body.images as IFile[]).filter((img) => img.file)
 
-          continue
-        }
+      uploadedImageIds.push(...existingImages.map((img) => Number(img.id)))
 
-        try {
+      if (newImages.length > 0) {
+        const uploadPromises = newImages.map(async (image) => {
           const formData = new FormData()
 
-          formData.append('file', image.file)
+          formData.append('file', image.file!)
           formData.append(
             '_payload',
             JSON.stringify({
-              alt: image.filename || image.file.name || 'Model Image',
+              alt: image.filename || image.file!.name || 'Model Image',
             }),
           )
 
@@ -49,15 +46,16 @@ export async function createModel(
           }
 
           if (uploadResponse?.errors) {
-            return {
-              isError: true,
-              isSuccess: false,
-              data: null,
-              errors: uploadResponse.errors,
-            }
+            throw new Error(uploadResponse.errors[0]?.message || 'Failed to upload image')
           }
 
-          uploadedImageIds.push(Number(uploadResponse.doc.id))
+          return Number(uploadResponse.doc.id)
+        })
+
+        try {
+          const newImageIds = await Promise.all(uploadPromises)
+
+          uploadedImageIds.push(...newImageIds)
         } catch (uploadError) {
           logger.error(handleError(uploadError))
 
