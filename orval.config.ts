@@ -4,7 +4,7 @@ export default defineConfig({
   fetch: {
     output: {
       target: './app/src/shared/api/fetch/index.ts',
-      schemas: './app/src/shared/api/model',
+      schemas: './app/src/shared/api/_models',
 
       override: {
         mutator: {
@@ -18,12 +18,12 @@ export default defineConfig({
       },
     },
     input: {
-      target: 'https://back-openorigin-main.s.dev.family/api/docs/spec',
+      target: 'https://openorigin-api.maxsimov.pro/api/openapi.json',
       validation: true,
     },
     hooks: {
       afterAllFilesWrite: {
-        command: 'eslint --fix',
+        command: 'eslint --fix --no-error-on-unmatched-pattern',
       },
     },
   },
@@ -32,7 +32,7 @@ export default defineConfig({
     output: {
       client: 'swr',
       target: './app/src/shared/api/swr/index.ts',
-      schemas: './app/src/shared/api/model',
+      schemas: './app/src/shared/api/_models',
 
       override: {
         mutator: {
@@ -59,12 +59,12 @@ export default defineConfig({
       },
     },
     input: {
-      target: 'https://back-openorigin-main.s.dev.family/api/docs/spec',
+      target: 'https://openorigin-api.maxsimov.pro/api/openapi.json',
       validation: true,
     },
     hooks: {
       afterAllFilesWrite: {
-        command: 'eslint --fix',
+        command: 'eslint --fix --no-error-on-unmatched-pattern',
       },
     },
   },
@@ -75,12 +75,12 @@ export default defineConfig({
       target: './app/src/shared/api/zod/index.ts',
     },
     input: {
-      target: 'https://back-openorigin-main.s.dev.family/api/docs/spec',
+      target: 'https://openorigin-api.maxsimov.pro/api/openapi.json',
       validation: true,
     },
     hooks: {
       afterAllFilesWrite: {
-        command: 'eslint --fix',
+        command: 'eslint --fix --no-error-on-unmatched-pattern',
       },
     },
   },

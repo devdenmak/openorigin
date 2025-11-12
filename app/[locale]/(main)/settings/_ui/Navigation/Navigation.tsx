@@ -40,18 +40,6 @@ const Navigation = ({ className = '' }: INavigationProps) => {
           {t('account')}
         </LocalizedLink>
       </li>
-      <li className="max-lg:text-center">
-        <LocalizedLink
-          className={cn(
-            'block rounded-md p-4 font-main text-base font-medium text-text-fourth hover:text-button-eighth active:text-text-fourth transition-colors',
-            localizedPathname.startsWith('/settings/theme') &&
-              'bg-gradient-solid-to-r !text-text-primary max-lg:bg-gradient-solid-to-b',
-          )}
-          href="/settings/theme"
-        >
-          {t('theme')}
-        </LocalizedLink>
-      </li>
     </ul>
   )
 }

@@ -5,6 +5,7 @@ import React from 'react'
 import { FileRejection, useDropzone } from 'react-dropzone'
 import { toast } from 'sonner'
 
+import { BACKEND_URL } from '@/src/app/config/env'
 import { cn } from '@/src/shared/lib/tailwindUtils'
 
 import { Button } from '../Button'
@@ -13,8 +14,9 @@ import { Image } from '../Image'
 
 export type IFile = {
   url?: string
-  uuid?: string
   file?: File | null
+  id?: string | number
+  filename?: string
 }
 
 type Props = {
@@ -35,6 +37,16 @@ export default function FileUploader({
   disabled = false,
 }: Props) {
   const t = useTranslations('Common')
+
+  const normalizeFileUrl = (url?: string) => {
+    if (!url) return ''
+
+    if (url.startsWith('blob:') || url.startsWith('data:')) return url
+
+    if (/^https?:\/\//.test(url)) return url
+
+    return `${BACKEND_URL}${url}`
+  }
 
   const customErrors: {
     [key: string]: string
@@ -63,8 +75,9 @@ export default function FileUploader({
 
       newFiles.push({
         url: fileUrl,
+        filename: file.name,
         file,
-        uuid: '',
+        id: '',
       })
     })
 
@@ -137,7 +150,14 @@ export default function FileUploader({
           {value.map((file) => (
             <div className="p-1" key={file.url}>
               <div className="relative size-16 overflow-hidden rounded-md max-lg:size-14">
-                <Image quality={90} fillParent width={64} height={64} src={file.url} alt="avatar" />
+                <Image
+                  quality={90}
+                  fillParent
+                  width={64}
+                  height={64}
+                  src={normalizeFileUrl(file?.url)}
+                  alt="avatar"
+                />
 
                 {!disabled && (
                   <a

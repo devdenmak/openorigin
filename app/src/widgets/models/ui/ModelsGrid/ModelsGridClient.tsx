@@ -1,14 +1,16 @@
 'use client'
 
+import { ModelWithFavorites } from '@/src/entities/model/api/types'
 import { useModels } from '@/src/entities/model/hooks/useModels'
 import { ModelCard } from '@/src/entities/model/ui/ModelCard'
 import { LikeButton } from '@/src/features/model/like-model/ui/LikeButton'
-import { ModelsList200, ModelsListParams } from '@/src/shared/api/model'
+import { ListModelsParams } from '@/src/shared/api/_models'
+import { ListModelsResult } from '@/src/shared/api/fetch'
 import { LocalizedLink } from '@/src/shared/ui/LocalizedLink'
 
 type IModelsGridClient = {
-  models: ModelsList200
-  query?: ModelsListParams
+  models: ListModelsResult
+  query?: ListModelsParams
 }
 
 export const ModelsGridClient = ({ models, query }: IModelsGridClient) => {
@@ -16,27 +18,31 @@ export const ModelsGridClient = ({ models, query }: IModelsGridClient) => {
 
   return (
     <>
-      {data?.data?.map((model) => (
-        <ModelCard
-          idx={model.id}
-          key={model.uuid}
-          model={model}
-          slotDetails={
-            <LocalizedLink
-              className="absolute inset-0 z-1"
-              href={{ pathname: '/models/[id]', params: { id: model.uuid } }}
-            />
-          }
-          slotLike={
-            <LikeButton
-              id={model.uuid}
-              query={query}
-              isFavorite={model.is_favorite}
-              count={model.favorite_count}
-            />
-          }
-        />
-      ))}
+      {data?.docs.map((item) => {
+        const model = item as ModelWithFavorites
+
+        return (
+          <ModelCard
+            idx={model.id}
+            key={model.id}
+            model={model}
+            slotDetails={
+              <LocalizedLink
+                className="absolute inset-0 z-1"
+                href={{ pathname: '/models/[id]', params: { id: model.id } }}
+              />
+            }
+            slotLike={
+              <LikeButton
+                id={model.id}
+                query={query}
+                isFavorite={model.isFavorite}
+                count={model.favoriteCount}
+              />
+            }
+          />
+        )
+      })}
     </>
   )
 }

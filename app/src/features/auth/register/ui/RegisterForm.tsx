@@ -31,19 +31,28 @@ import { register } from '../api'
 
 export function RegisterForm() {
   const t = useTranslations()
+
   const { zodSchema, passwordValidator } = usePasswordValidation()
   const [nextStep, setNextStep] = useState(false)
 
   const handleError = (errors: IErrors) => {
-    if (errors) {
-      const errorsKeys = Object.keys(errors)
+    if (!errors) return
 
-      if (errorsKeys.includes('email')) {
-        setNextStep(false)
+    if (Array.isArray(errors)) {
+      for (const err of errors) {
+        const nested = err.data?.errors
 
-        setTimeout(() => {
-          form.setFocus('email')
-        }, 100)
+        if (Array.isArray(nested)) {
+          if (nested.some((e) => e.path === 'email')) {
+            setNextStep(false)
+
+            setTimeout(() => {
+              form.setFocus('email')
+            }, 100)
+
+            return
+          }
+        }
       }
     }
   }
@@ -59,15 +68,15 @@ export function RegisterForm() {
       password: zodSchema,
       username: z.string(),
       name: z.string(),
-      github_username: z.string().optional(),
-      ai_interests: z.string().optional(),
+      githubUsername: z.string().optional(),
+      aiInterests: z.string().optional(),
     }),
 
     initialValues: {
       email: '',
       password: '',
-      ai_interests: '',
-      github_username: '',
+      aiInterests: '',
+      githubUsername: '',
       name: '',
       username: '',
     },
@@ -88,7 +97,14 @@ export function RegisterForm() {
           noValidate
           className="relative"
           // @ts-ignore
-          action={form.handleSubmit((values) => action(values))}
+          action={form.handleSubmit((values) => {
+            if (!nextStep) {
+              setNextStep(true)
+              return
+            }
+
+            action(values)
+          })}
         >
           <div className={cn('block', nextStep && 'hidden')}>
             <div className="mx-auto max-w-sm">
@@ -224,7 +240,7 @@ export function RegisterForm() {
 
                 <FormField
                   control={form.control}
-                  name="github_username"
+                  name="githubUsername"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
@@ -244,7 +260,7 @@ export function RegisterForm() {
 
                 <FormField
                   control={form.control}
-                  name="ai_interests"
+                  name="aiInterests"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>

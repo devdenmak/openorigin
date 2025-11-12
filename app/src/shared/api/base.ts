@@ -13,7 +13,7 @@ type IApiClientMainOptions = {
   url: string
   method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'
   params?: Record<string, unknown>
-  data?: Record<string, unknown> | FormData
+  data?: unknown
   headers?: Record<string, string>
   responseType?: string
 }
@@ -97,5 +97,8 @@ export const apiClient = async <T>(
 
   return handleResponse<T>(response, fullUrl)
 }
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type SecondParameter<T extends (...args: any) => any> = Parameters<T>[1]
 
 export default apiClient

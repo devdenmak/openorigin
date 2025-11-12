@@ -6,7 +6,7 @@ import { useFormState, useFormStatus } from 'react-dom'
 
 import { useRouter } from '@/src/app/config/i18n'
 import { useAuthUser } from '@/src/entities/auth-user/hooks/useAuthUser'
-import { ModelsListParams } from '@/src/shared/api/model'
+import { ListModelsParams } from '@/src/shared/api/_models'
 import { cn } from '@/src/shared/lib/tailwindUtils'
 import { Icon } from '@/src/shared/ui/Icon'
 
@@ -17,7 +17,7 @@ export type ILikeButtonProps = {
   id: string
   isFavorite: boolean
   count: number
-  query?: ModelsListParams
+  query?: ListModelsParams
   hasLikeText?: boolean
 }
 
@@ -45,7 +45,7 @@ const LikeButton = ({
     setFavoriteCount(favoriteCount + 1)
 
     setTimeout(() => {
-      // TODO ужас, подумать
+      // TODO: Think About It
       toggleLike({ id, query, type: 'like' })
     }, 1)
   }
@@ -59,7 +59,7 @@ const LikeButton = ({
     setFavoriteCount(favoriteCount - 1)
 
     setTimeout(() => {
-      // TODO ужас, подумать
+      // TODO: Think About It
       toggleLike({ id, query, type: 'unlike' })
     }, 1)
   }

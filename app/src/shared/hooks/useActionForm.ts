@@ -51,6 +51,7 @@ export const useActionForm = <TSchema extends z.ZodSchema, TForm>({
     resolver: zodResolver(formSchema),
     values: initialValues,
     mode,
+    shouldFocusError: true,
   })
 
   const { setFocus, setError, reset } = form
@@ -64,23 +65,58 @@ export const useActionForm = <TSchema extends z.ZodSchema, TForm>({
   }, [])
 
   useEffect(() => {
-    if (!errors) return
+    if (!errors || !Array.isArray(errors)) return
 
-    Object.keys(errors).forEach((field) => {
-      setError(field as Path<TypeOf<TSchema>>, {
-        type: 'manual',
-        message: errors[field].join(', '),
-      })
+    let hasFieldErrors = false
+    let firstErrorPath: string | undefined
+
+    errors.forEach((err) => {
+      const nestedErrors = err.data?.errors
+
+      if (nestedErrors) {
+        nestedErrors.forEach((fieldError) => {
+          if (fieldError.path && fieldError.message) {
+            if (!hasFieldErrors) {
+              firstErrorPath = fieldError.path
+            }
+
+            hasFieldErrors = true
+
+            setError(fieldError.path as Path<TypeOf<TSchema>>, {
+              type: 'manual',
+              message: fieldError.message,
+            })
+          }
+        })
+      }
     })
 
-    const firstError = Object.keys(errors).reduce((field, a) => {
-      return errors[field] ? field : a
-    }, '')
-
-    if (firstError) {
+    if (hasFieldErrors && firstErrorPath) {
       setTimeout(() => {
-        setFocus(firstError as Path<TypeOf<TSchema>>)
+        setFocus(firstErrorPath as Path<TypeOf<TSchema>>)
       }, 100)
+
+      return
+    }
+
+    const generalErrorMessages = errors
+      .map((err) => err.message)
+      .filter(Boolean)
+      .join(', ')
+
+    if (generalErrorMessages) {
+      const firstField = Object.keys(initialValues)[0] as Path<TypeOf<TSchema>>
+
+      setError(firstField || ('root' as Path<TypeOf<TSchema>>), {
+        type: 'manual',
+        message: generalErrorMessages,
+      })
+
+      if (firstField) {
+        setTimeout(() => {
+          setFocus(firstField)
+        }, 100)
+      }
     }
   }, [errors, setFocus, setError])
 
@@ -101,7 +137,7 @@ export const useActionForm = <TSchema extends z.ZodSchema, TForm>({
     if (isSuccess && redirectTo) {
       return router.push({
         pathname: redirectTo,
-        params: { id: data?.data?.uuid },
+        params: { id: data?.id },
       })
     }
   }, [isSuccess, isError, data])

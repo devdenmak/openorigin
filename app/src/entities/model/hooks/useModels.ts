@@ -2,13 +2,14 @@
 
 import useSWR from 'swr'
 
-import { ModelsList200, ModelsListParams } from '@/src/shared/api/model'
-import { getModelsListKey, modelsList } from '@/src/shared/api/swr'
+import { ListModelsParams } from '@/src/shared/api/_models'
+import { ListModelsResult } from '@/src/shared/api/fetch'
+import { getListModelsKey, listModels } from '@/src/shared/api/swr'
 
-export const useModels = (query?: ModelsListParams, initialModels?: ModelsList200) => {
+export const useModels = (query?: ListModelsParams, initialModels?: ListModelsResult) => {
   const { data, mutate, isLoading, isValidating } = useSWR(
-    getModelsListKey(query),
-    () => modelsList(query),
+    getListModelsKey(query),
+    () => listModels(query),
     {
       revalidateOnMount: true,
       fallbackData: initialModels,

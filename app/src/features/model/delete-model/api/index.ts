@@ -1,18 +1,15 @@
 import { mutate } from 'swr'
 
+import { getModelsFavoritesKey, getModelsMyKey } from '@/src/entities/auth-model/api/swr'
 import { MODELS_TAG } from '@/src/entities/model/config'
-import { modelsDelete } from '@/src/shared/api/fetch'
+import { deleteModel as modelDelete } from '@/src/shared/api/fetch'
 import { nextRevalidateTag, nextRevalidateTagByUrl } from '@/src/shared/api/revalidate'
-import {
-  getModelsFavoritesKey,
-  getModelsMyKey,
-  getModelsUpdateMutationKey,
-} from '@/src/shared/api/swr'
+import { getUpdateModelMutationKey } from '@/src/shared/api/swr'
 import { handleError } from '@/src/shared/lib/handleError'
 import { logger } from '@/src/shared/lib/logger'
 
 const clearCache = (id: string) => {
-  const mutationKey = getModelsUpdateMutationKey(id)
+  const mutationKey = getUpdateModelMutationKey(id)
   const authUserFavoriteKey = getModelsFavoritesKey()
 
   nextRevalidateTag(MODELS_TAG) // Server revalidate public list models
@@ -25,7 +22,7 @@ const clearCache = (id: string) => {
 
 export async function deleteModel(_: unknown, body: { id: string }) {
   try {
-    await modelsDelete(body.id)
+    await modelDelete(body.id)
 
     clearCache(body.id)
   } catch (e) {

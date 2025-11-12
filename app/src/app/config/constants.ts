@@ -5,5 +5,5 @@ export const DEFAULT_DESCRIPTION = 'OpenOrigin'
 export const SITE_NAME = FRONTEND_URL
 export const COMPANY_NAME = 'OpenOrigin'
 export const AUTHOR = 'Dev Family Team'
-export const SESSION_TOKEN_KEY_NAME = 'openOrigin_session_token'
-export const PREVIEW_MODE_USER_NAME = 'JaySmith'
+export const SESSION_TOKEN_KEY_NAME = 'open-origin-token'
+export const PREVIEW_MODE_USER_NAME = 'jaysmith'

@@ -5,15 +5,16 @@ import { useEffect, useState, useSyncExternalStore } from 'react'
 import { preload } from 'swr'
 
 import { PREVIEW_MODE_USER_NAME } from '@/src/app/config/constants'
+import { currentUser } from '@/src/entities/auth-user/api/fetch'
+import { getCurrentUserKey, useCurrentUser } from '@/src/entities/auth-user/api/swr'
 import { getSessionToken, subscribe } from '@/src/shared/api/store'
-import { getProfileKey, profile, useProfile } from '@/src/shared/api/swr'
 import { isClient } from '@/src/shared/lib/isServerOrClient'
 
 if (isClient) {
   const hasToken = getSessionToken()
 
   if (hasToken) {
-    preload(getProfileKey(), profile)
+    preload(getCurrentUserKey(), currentUser)
   }
 }
 
@@ -23,7 +24,7 @@ export const useAuthUser = () => {
   const tokenInit = token !== undefined
   const [enabled, setEnabled] = useState(true)
 
-  const { data, mutate, isLoading, isValidating } = useProfile({
+  const { data, mutate, isLoading, isValidating } = useCurrentUser({
     swr: { enabled: enabled && tokenInit && token !== null },
   })
 
@@ -32,16 +33,16 @@ export const useAuthUser = () => {
   }, [token])
 
   useEffect(() => {
-    if (tokenInit) setEnabled(!!data?.data)
+    if (tokenInit) setEnabled(!!data?.user)
   }, [data])
 
   const _isLoading = !tokenInit || isLoading
 
   return {
-    isPreviewMode: data?.data.username === PREVIEW_MODE_USER_NAME,
+    isPreviewMode: data?.user?.username === PREVIEW_MODE_USER_NAME,
     data,
     mutate,
-    isAuth: !!token && !!data?.data,
+    isAuth: !!token && !!data?.user,
     isLoading: _isLoading,
     isValidating,
     isLoadingOrValidating: _isLoading || isValidating,

@@ -3,7 +3,7 @@ import { getTranslations, unstable_setRequestLocale } from 'next-intl/server'
 
 import { ILang } from '@/src/app/model'
 import { NextIntlProvider } from '@/src/app/providers/nextIntlProvider'
-import { modelsList, modelsShow } from '@/src/shared/api/fetch'
+import { findModelById, listModels } from '@/src/shared/api/fetch'
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -23,17 +23,17 @@ type IProps = {
 export async function generateStaticParams({ params: { locale } }: IProps) {
   unstable_setRequestLocale(locale)
 
-  const { data: models } = await modelsList()
+  const { docs } = await listModels({ limit: 1000 })
 
-  return models.map(({ uuid }) => ({
-    id: uuid,
+  return docs.map(({ id }) => ({
+    id: String(id),
   }))
 }
 
 export async function generateMetadata({ params: { locale, id } }: IProps): Promise<Metadata> {
   unstable_setRequestLocale(locale)
 
-  const { data: model } = await modelsShow(id)
+  const model = await findModelById(id)
 
   return {
     title: model?.name,
@@ -45,8 +45,7 @@ export default async function ModelPageId({ params: { locale, id } }: IProps) {
   unstable_setRequestLocale(locale)
 
   const t = await getTranslations()
-
-  const model = await modelsShow(id)
+  const model = await findModelById(id)
 
   return (
     <NextIntlProvider messagesCategories={['ModelPage']}>
@@ -63,7 +62,7 @@ export default async function ModelPageId({ params: { locale, id } }: IProps) {
               <BreadcrumbSeparator />
 
               <BreadcrumbItem>
-                <BreadcrumbPage>{model?.data?.name}</BreadcrumbPage>
+                <BreadcrumbPage>{model.name}</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>

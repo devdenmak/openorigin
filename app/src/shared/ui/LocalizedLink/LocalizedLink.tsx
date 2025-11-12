@@ -28,6 +28,7 @@ const LocalizedLink = forwardRef<HTMLAnchorElement, ILocalizedLink>(
         ref={ref}
         scroll={scroll}
         onClick={onClick}
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         href={href as any}
         target={target}
         className={className}

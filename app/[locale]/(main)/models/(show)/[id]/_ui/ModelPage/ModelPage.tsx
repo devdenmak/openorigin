@@ -1,4 +1,4 @@
-import { ModelsShow200 } from '@/src/shared/api/model'
+import { Model } from '@/src/shared/api/_models'
 import { cn } from '@/src/shared/lib/tailwindUtils'
 
 import { ModelDescription } from '../ModelDescription'
@@ -9,7 +9,7 @@ import { ModelPreview } from '../ModelPreview'
 export type IModelPageProps = {
   className?: string
   slotCommentsWidget?: JSX.Element
-  model: ModelsShow200
+  model: Model
 }
 
 const ModelPage = ({ className, model, slotCommentsWidget }: IModelPageProps) => {

@@ -114,7 +114,7 @@
             "optional": "GitHub Username (optional)"
           },
           "placeholder": {
-            "simple": "@username"
+            "simple": "username"
           }
         },
         "blockchainInterest": {
@@ -127,10 +127,10 @@
         },
         "code": {
           "title": {
-            "simple": "6-digit code"
+            "simple": "Reset Code"
           },
           "placeholder": {
-            "simple": "000000"
+            "simple": "Code from the email"
           }
         },
         "avatar": {
@@ -252,7 +252,8 @@
         "too-many-files": "Maximum number of files exceeded",
         "file-invalid-type": "Invalid file format",
         "file-too-large": "Invalid file size",
-        "unexpected": "An unexpected error has occurred"
+        "unexpected": "An unexpected error has occurred",
+        "tokenInvalid": "Invalid token"
       }
     },
 
@@ -283,10 +284,10 @@
     "pageTitle": "Project Roadmap",
     "roadmap": {
       "title": {
-        "first": "q3 2024",
-        "second": "q4 2024",
-        "third": "q1 2025",
-        "fourth": "q2 2025"
+        "first": "q3 2025",
+        "second": "q4 2025",
+        "third": "q1 2026",
+        "fourth": "q2 2026"
       },
       "list": {
         "first": "Public release of website.",

@@ -22,6 +22,7 @@ import { changePassword } from '../api'
 
 const ChangePasswordForm = () => {
   const t = useTranslations()
+  const { data } = useAuthUser()
   const { zodSchema } = usePasswordValidation()
 
   const { form, action } = useActionForm({
@@ -29,7 +30,6 @@ const ChangePasswordForm = () => {
 
     formSchema: z
       .object({
-        old_password: z.string().min(1),
         password: zodSchema,
         password_confirmation: z.string(),
       })
@@ -39,7 +39,6 @@ const ChangePasswordForm = () => {
       }),
 
     initialValues: {
-      old_password: '',
       password: '',
       password_confirmation: '',
     },
@@ -55,28 +54,9 @@ const ChangePasswordForm = () => {
         <form
           noValidate
           // @ts-ignore
-          action={form.handleSubmit((values) => action(values))}
+          action={form.handleSubmit((values) => action({ id: data?.user?.id, ...values }))}
           className="space-y-6 max-lg:space-y-4"
         >
-          <FormField
-            control={form.control}
-            name="old_password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t('Common.fields.input.password.title.old')}</FormLabel>
-                <FormControl>
-                  <Input
-                    inputSize="md"
-                    type="password"
-                    placeholder={t('Common.fields.input.password.placeholder.enterOld')}
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
           <FormField
             control={form.control}
             name="password"

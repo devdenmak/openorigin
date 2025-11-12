@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl'
 import { useFormStatus } from 'react-dom'
 import { z } from 'zod'
 
+import { useAuthUser } from '@/src/entities/auth-user/hooks/useAuthUser'
 import { useActionForm } from '@/src/shared/hooks/useActionForm'
 import { cn } from '@/src/shared/lib/tailwindUtils'
 import { Button } from '@/src/shared/ui/Button'
@@ -26,6 +27,7 @@ export type ISubscribeFormProps = {
 
 const SubscribeForm = ({ className }: ISubscribeFormProps) => {
   const t = useTranslations()
+  const { data } = useAuthUser()
 
   const { form, action } = useActionForm({
     action: subscribePremium,
@@ -47,7 +49,7 @@ const SubscribeForm = ({ className }: ISubscribeFormProps) => {
         <form
           noValidate
           // @ts-ignore
-          action={form.handleSubmit((values) => action(values))}
+          action={form.handleSubmit((values) => action({ author: data?.user?.id, ...values }))}
         >
           <Card>
             <CardHeader>

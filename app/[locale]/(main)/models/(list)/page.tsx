@@ -2,12 +2,12 @@ import { Metadata } from 'next'
 import { getTranslations, unstable_setRequestLocale } from 'next-intl/server'
 
 import { ILang } from '@/src/app/model'
-import { ModelsListParams } from '@/src/shared/api/model'
+import { ListModelsParams } from '@/src/shared/api/_models'
 import { ModelsGrid } from '@/src/widgets/models/ui/ModelsGrid'
 
 type IProps = {
   params: { locale: ILang }
-  searchParams: ModelsListParams
+  searchParams: ListModelsParams
 }
 
 export async function generateMetadata({ params: { locale } }: IProps): Promise<Metadata> {

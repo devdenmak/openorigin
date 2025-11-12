@@ -5,7 +5,7 @@ import { cn } from '@/src/shared/lib/tailwindUtils'
 import { AvatarEmoji } from '../AvatarEmoji'
 
 type IModelCard = {
-  idx: number
+  idx: number | string
   model: {
     emoji: string
     updated: string

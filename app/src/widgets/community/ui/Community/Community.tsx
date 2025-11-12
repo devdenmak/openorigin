@@ -1,6 +1,8 @@
 import { getTranslations } from 'next-intl/server'
 
-import { widgetsCommunityStats } from '@/src/shared/api/fetch'
+import { BACKEND_URL } from '@/src/app/config/env'
+import { Icon } from '@/src/shared/api/_models'
+import { listStats } from '@/src/shared/api/fetch'
 import { cn } from '@/src/shared/lib/tailwindUtils'
 import { Image } from '@/src/shared/ui/Image'
 import { Title } from '@/src/shared/ui/Title'
@@ -10,12 +12,12 @@ export type ICommunityProps = {
 }
 
 const Community = async ({ className }: ICommunityProps) => {
-  const { data } = await widgetsCommunityStats()
+  const { docs } = await listStats()
   const t = await getTranslations()
 
-  if (!data.length) return
+  if (!docs.length) return
 
-  const latestDate = data.reduce((a, b) => (a.updated_at > b.updated_at ? a : b)).updated_at
+  const latestDate = docs.reduce((a, b) => (a.updatedAt > b.updatedAt ? a : b)).updatedAt
   const dateTime = new Date(latestDate)
 
   return (
@@ -37,14 +39,20 @@ const Community = async ({ className }: ICommunityProps) => {
         </header>
 
         <div className="-mx-2.5 -mb-5 flex flex-wrap justify-center">
-          {data.map(({ id, image, text, amount }) => (
+          {docs.map(({ id, image, title, amount }) => (
             <div
               className="min-w-[373px] max-w-[484px] grow px-2.5 pb-5 max-md:w-full max-md:min-w-0 max-md:pb-3"
               key={id}
             >
               <div className="flex min-h-28 items-center justify-center rounded-2xl bg-surface-fourth p-5 max-md:min-h-0 max-md:p-3">
                 <div className="mr-4 flex size-16 shrink-0 items-center justify-center rounded-xl bg-white">
-                  <Image disableLoader src={image?.url} alt={text} width={32} height={32} />
+                  <Image
+                    disableLoader
+                    src={`${BACKEND_URL}${(image as Icon).url}`}
+                    alt={title}
+                    width={32}
+                    height={32}
+                  />
                 </div>
 
                 <div className="grow">
@@ -52,7 +60,7 @@ const Community = async ({ className }: ICommunityProps) => {
                     {amount}
                   </Title>
 
-                  <p className="font-main text-lg text-text-primary max-md:text-base">{text}</p>
+                  <p className="font-main text-lg text-text-primary max-md:text-base">{title}</p>
                 </div>
               </div>
             </div>

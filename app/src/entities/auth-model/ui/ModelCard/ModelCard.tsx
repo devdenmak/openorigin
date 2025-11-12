@@ -1,22 +1,24 @@
-import { ModelsMy200DataItem } from '@/src/shared/api/model'
+import { Model, Tag } from '@/src/shared/api/_models'
 import { LocalizedLink } from '@/src/shared/ui/LocalizedLink'
 import { ModelCard as ModelItem } from '@/src/shared/ui/ModelCard'
 
 export type IModelCardProps = {
-  idx: number
-  model: ModelsMy200DataItem
+  idx: number | string
+  model: Model
   slotEdit: React.ReactNode
   slotDelete: React.ReactNode
   slotLike: React.ReactNode
 }
 
 const ModelCard = ({ model, idx, slotEdit, slotDelete, slotLike }: IModelCardProps) => {
-  const { emoji, updated_at: updated, tag, name: title, uuid: id } = model
+  const { emoji, updatedAt: updated, tag, name: title, id } = model
+
+  const modelTag = tag as Tag
 
   return (
     <ModelItem
       idx={idx}
-      model={{ emoji, updated, tag: tag.name, title, id }}
+      model={{ emoji, updated, tag: modelTag.name, title, id }}
       slotEdit={slotEdit}
       slotDelete={slotDelete}
       slotDetails={

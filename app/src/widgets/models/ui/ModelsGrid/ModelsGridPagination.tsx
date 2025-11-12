@@ -2,7 +2,7 @@
 
 import { useQueryState } from 'nuqs'
 
-import { ModelsList200Meta } from '@/src/shared/api/model'
+import { ModelListResponseResponse } from '@/src/shared/api/_models'
 import { scrollToId } from '@/src/shared/lib/scrollTo'
 import { Pagination } from '@/src/shared/ui/Pagination'
 
@@ -10,10 +10,10 @@ import { MODELS_LAYOUT_ID } from '../../config'
 
 type ModelsGridPaginationProps = {
   className?: string
-  meta: ModelsList200Meta | null
+  models: ModelListResponseResponse
 }
 
-export const ModelsGridPagination = ({ meta, className }: ModelsGridPaginationProps) => {
+export const ModelsGridPagination = ({ models, className }: ModelsGridPaginationProps) => {
   const [, setPage] = useQueryState('page', {
     shallow: false,
     defaultValue: '1',
@@ -22,7 +22,7 @@ export const ModelsGridPagination = ({ meta, className }: ModelsGridPaginationPr
     scroll: false,
   })
 
-  if (!meta) return
+  if (!models) return
 
   const handleChange = (page: number) => {
     scrollToId(MODELS_LAYOUT_ID)
@@ -32,8 +32,8 @@ export const ModelsGridPagination = ({ meta, className }: ModelsGridPaginationPr
   return (
     <Pagination
       className={className}
-      currentPage={meta.current_page}
-      lastPage={meta.last_page}
+      currentPage={models.page}
+      lastPage={models.totalPages}
       onChange={handleChange}
     />
   )

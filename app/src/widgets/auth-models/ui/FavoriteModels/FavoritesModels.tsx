@@ -18,7 +18,7 @@ const FavoritesModels = ({ className }: IAuthModelsProps) => {
   const t = useTranslations('Common')
   const { data, isLoading } = useFavoritesModels()
 
-  const models = data?.data ?? []
+  const models = data?.docs ?? []
 
   if (isLoading) {
     return (
@@ -39,15 +39,15 @@ const FavoritesModels = ({ className }: IAuthModelsProps) => {
           {models.map((model) => (
             <ModelFavorite
               idx={model.id}
-              key={model.uuid}
+              key={model.id}
               model={model}
-              slotEdit={<EditModelLink id={model.uuid} />}
-              slotDelete={<DeleteModelDialog id={model.uuid} />}
+              slotEdit={<EditModelLink id={model.id} />}
+              slotDelete={<DeleteModelDialog id={model.id} />}
               slotLike={
                 <LikeButton
-                  id={model.uuid}
-                  isFavorite={model.is_favorite}
-                  count={model.favorite_count}
+                  id={model.id}
+                  isFavorite={model.isFavorite}
+                  count={model.favoriteCount}
                 />
               }
             />

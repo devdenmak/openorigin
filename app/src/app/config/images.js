@@ -4,12 +4,17 @@ const images = {
   remotePatterns: [
     {
       protocol: 'https',
-      hostname: 'imgproxy.by.dev.family',
+      hostname: 'openorigin-api.maxsimov.pro',
     },
     {
       protocol: 'https',
-      hostname: 's3.by.dev.family',
+      hostname: 'imgproxy.maxsimov.pro',
     },
+    // {
+    //   protocol: 'http',
+    //   hostname: 'localhost',
+    //   port: '3001',
+    // },
   ],
 }
 

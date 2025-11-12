@@ -4,7 +4,7 @@ import { emojiVariants } from './AvatarEmoji.variants'
 
 export type IAvatarEmojiProps = {
   className?: string
-  idx?: number
+  idx?: number | string
   emoji?: string
   size?: emojiVariants['size']
 }
@@ -20,7 +20,7 @@ const backgroundColors = [
 ]
 
 const AvatarEmoji = ({ className, size, emoji, idx }: IAvatarEmojiProps) => {
-  const key = idx !== undefined ? idx % backgroundColors.length : 0
+  const key = idx !== undefined ? Number(idx) % backgroundColors.length : 0
 
   return (
     <section className={cn(emojiVariants({ size, className }), backgroundColors[key])}>

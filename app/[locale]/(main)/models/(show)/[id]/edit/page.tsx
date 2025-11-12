@@ -4,7 +4,7 @@ import { getTranslations, unstable_setRequestLocale } from 'next-intl/server'
 import { ILang } from '@/src/app/model'
 import { AuthWrapper } from '@/src/entities/auth-user/ui/AuthWrapper'
 import { EditModelForm } from '@/src/features/model/edit-model/ui/EditModelForm'
-import { modelsList, modelsShow } from '@/src/shared/api/fetch'
+import { findModelById, listModels } from '@/src/shared/api/fetch'
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -24,17 +24,17 @@ type IProps = {
 export async function generateStaticParams({ params: { locale } }: IProps) {
   unstable_setRequestLocale(locale)
 
-  const { data: models } = await modelsList()
+  const { docs } = await listModels({ limit: 1000 })
 
-  return models.map(({ uuid }) => ({
-    id: uuid,
+  return docs.map(({ id }) => ({
+    id: String(id),
   }))
 }
 
 export async function generateMetadata({ params: { locale, id } }: IProps): Promise<Metadata> {
   unstable_setRequestLocale(locale)
 
-  const { data: model } = await modelsShow(id)
+  const model = await findModelById(id)
 
   return {
     title: model?.name,
@@ -46,7 +46,7 @@ export default async function ModelsEditPage({ params: { locale, id } }: IProps)
   unstable_setRequestLocale(locale)
 
   const t = await getTranslations()
-  const model = await modelsShow(id)
+  const model = await findModelById(id)
 
   return (
     <AuthWrapper>
@@ -73,7 +73,7 @@ export default async function ModelsEditPage({ params: { locale, id } }: IProps)
               <BreadcrumbSeparator />
 
               <BreadcrumbItem>
-                <BreadcrumbPage>{model.data?.name}</BreadcrumbPage>
+                <BreadcrumbPage>{model?.name}</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -84,7 +84,7 @@ export default async function ModelsEditPage({ params: { locale, id } }: IProps)
             </div>
 
             <Title tag="h1" size="md">
-              {model.data?.name}
+              {model?.name}
             </Title>
           </div>
 

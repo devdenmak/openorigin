@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl'
 
 import { useModel } from '@/src/entities/model/hooks/useModel'
-import { ModelsShow200 } from '@/src/shared/api/model'
+import { Model, Tag } from '@/src/shared/api/_models'
 import { cn } from '@/src/shared/lib/tailwindUtils'
 import { Button, buttonVariants } from '@/src/shared/ui/Button'
 import { Icon } from '@/src/shared/ui/Icon'
@@ -11,7 +11,7 @@ import { LocalizedLink } from '@/src/shared/ui/LocalizedLink'
 
 export type IModelInfoProps = {
   className?: string
-  model: ModelsShow200
+  model: Model
 }
 
 const ModelInfo = ({ className, model }: IModelInfoProps) => {
@@ -19,7 +19,8 @@ const ModelInfo = ({ className, model }: IModelInfoProps) => {
 
   const { data, isMyModel } = useModel(model)
 
-  const _model = (data?.data ?? {}) as ModelsShow200['data']
+  const _model = (data ?? {}) as Model
+  const tag = _model.tag as Tag
 
   return (
     <section
@@ -30,7 +31,7 @@ const ModelInfo = ({ className, model }: IModelInfoProps) => {
           {t('ModelPage.tag')}
         </div>
         <div className="truncate rounded-3xl bg-surface-fourth px-4 py-2 font-main text-xs font-medium text-text-secondary">
-          {data?.data?.tag?.name}
+          {tag.name}
         </div>
       </div>
 
@@ -39,7 +40,7 @@ const ModelInfo = ({ className, model }: IModelInfoProps) => {
           {t('ModelPage.languages')}
         </div>
         <div className="truncate font-main text-base font-medium text-text-secondary">
-          {data?.data?.languages}
+          {_model.languages}
         </div>
       </div>
 
@@ -48,7 +49,7 @@ const ModelInfo = ({ className, model }: IModelInfoProps) => {
           {t('ModelPage.license')}
         </div>
         <div className="truncate font-main text-base font-medium text-text-secondary">
-          {data?.data?.license}
+          {_model.license}
         </div>
       </div>
 
@@ -57,7 +58,7 @@ const ModelInfo = ({ className, model }: IModelInfoProps) => {
           {t('ModelPage.finetuned')}
         </div>
         <div className="truncate font-main text-base font-medium text-text-secondary">
-          {data?.data?.finetuned_from}
+          {_model.finetunedFrom}
         </div>
       </div>
 
@@ -66,7 +67,7 @@ const ModelInfo = ({ className, model }: IModelInfoProps) => {
           <LocalizedLink
             href={{
               pathname: `/models/[id]/edit`,
-              params: { id: data?.data?.uuid },
+              params: { id: _model.id },
             }}
             className={cn(buttonVariants({ size: 'lg', variant: 'third' }), 'w-full mb-3')}
           >

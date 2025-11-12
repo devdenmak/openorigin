@@ -34,20 +34,20 @@ const Profile = ({ className = '' }: IProfileProps) => {
         <h2 className="font-headings text-xs font-semibold">{t('pageTitle')}</h2>
 
         <p className="mt-1.5 max-w-2xl font-main text-xs font-normal text-text-third">
-          {data?.data?.ai_interests ?? t('noInterests')}
+          {data?.user?.aiInterests || t('noInterests')}
         </p>
       </div>
 
-      {data?.data?.github_username && (
+      {data?.user?.githubUsername && (
         <a
           className="group -m-2 inline-flex min-w-0 max-w-full shrink-0 flex-nowrap items-center p-2 text-0"
           target="_blank"
-          href={`https://github.com/${data?.data?.github_username}`}
+          href={`https://github.com/${data?.user?.githubUsername}`}
         >
           <Icon className="mr-2 shrink-0 text-2xl" name="filled/github" />
 
           <span className="min-w-0 max-w-full truncate font-main text-xs text-text-secondary transition-colors group-hover:text-button-eighth group-active:text-text-secondary">
-            {data?.data?.github_username}
+            {data?.user?.githubUsername}
           </span>
         </a>
       )}

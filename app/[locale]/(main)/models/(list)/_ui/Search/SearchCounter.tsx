@@ -1,6 +1,6 @@
 import { useTranslations } from 'next-intl'
 
-import { modelsTotal } from '@/src/shared/api/fetch'
+import { modelsTotal } from '@/src/entities/model/api/fetch'
 import { cn } from '@/src/shared/lib/tailwindUtils'
 
 export type ISearchCounterProps = {
@@ -9,11 +9,11 @@ export type ISearchCounterProps = {
 
 const SearchCounter = async ({ className = '' }: ISearchCounterProps) => {
   const t = useTranslations('ModelsPage')
-  const { total } = await modelsTotal()
+  const { totalDocs } = await modelsTotal()
 
   return (
     <h3 className={cn('font-headings text-base font-semibold text-text-fourth', className)}>
-      {t('available', { total })}
+      {t('available', { total: totalDocs })}
     </h3>
   )
 }

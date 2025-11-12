@@ -50,7 +50,12 @@ export function ResetPasswordForm() {
 
     formSchema: z
       .object({
-        token: z.string().min(6).max(6),
+        token: z
+          .string()
+          .trim()
+          .refine((s) => /^\d{6}$/.test(s) || /^[0-9a-f]{40}$/i.test(s), {
+            message: t('Common.fields.validation.tokenInvalid'),
+          }),
         email: z.string().email(),
         password: zodSchema,
         password_confirmation: z.string(),
@@ -148,7 +153,7 @@ export function ResetPasswordForm() {
                     <FormLabel>{t('Common.fields.input.code.title.simple')}</FormLabel>
                     <FormControl>
                       <Input
-                        type="number"
+                        type="text"
                         placeholder={t('Common.fields.input.code.placeholder.simple')}
                         {...field}
                       />

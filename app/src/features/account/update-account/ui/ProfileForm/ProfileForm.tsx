@@ -30,26 +30,28 @@ const ProfileForm = () => {
 
     formSchema: z.object({
       name: z.string().min(1),
-      ai_interests: z.string(),
-      github_username: z.string(),
+      aiInterests: z.string(),
+      githubUsername: z.string(),
       avatar: z
         .object({
+          id: z.union([z.string(), z.number()]),
+          filename: z.string(),
           url: z.string(),
           file: z.instanceof(File).nullable(),
-          uuid: z.string(),
         })
         .nullable(),
     }),
 
     initialValues: {
-      name: data?.data?.name ?? '',
-      ai_interests: data?.data?.ai_interests ?? '',
-      github_username: data?.data?.github_username ?? '',
-      avatar: data?.data?.avatar?.url
+      name: data?.user?.name ?? '',
+      aiInterests: data?.user?.aiInterests ?? '',
+      githubUsername: data?.user?.githubUsername ?? '',
+      avatar: data?.user?.avatar?.url
         ? {
-            url: data?.data?.avatar?.url ?? '',
+            id: data?.user.avatar?.id ?? '',
+            url: data?.user?.avatar?.url ?? '',
+            filename: data?.user?.avatar?.filename ?? '',
             file: null,
-            uuid: data?.data.avatar?.uuid ?? '',
           }
         : null,
     },
@@ -63,7 +65,7 @@ const ProfileForm = () => {
       <form
         noValidate
         // @ts-ignore
-        action={form.handleSubmit((values) => action(values))}
+        action={form.handleSubmit((values) => action({ id: data?.user?.id, ...values }))}
         className="space-y-6 max-lg:space-y-4"
       >
         <FormField
@@ -87,7 +89,7 @@ const ProfileForm = () => {
 
         <FormField
           control={form.control}
-          name="github_username"
+          name="githubUsername"
           render={({ field }) => (
             <FormItem>
               <FormLabel>{t('Common.fields.input.githubUserName.title.optional')}</FormLabel>
@@ -123,7 +125,7 @@ const ProfileForm = () => {
 
         <FormField
           control={form.control}
-          name="ai_interests"
+          name="aiInterests"
           render={({ field }) => (
             <FormItem>
               <FormLabel>{t('Common.fields.input.blockchainInterest.title.simple')}</FormLabel>

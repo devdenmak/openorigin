@@ -2,7 +2,8 @@
 
 import useSWR from 'swr'
 
-import { getModelsMyKey, modelsMy } from '@/src/shared/api/swr'
+import { modelsMy } from '@/src/entities/auth-model/api/fetch'
+import { getModelsMyKey } from '@/src/entities/auth-model/api/swr'
 
 export const useAuthModels = () => {
   const { data, mutate, isLoading, isValidating } = useSWR(getModelsMyKey(), () => modelsMy())

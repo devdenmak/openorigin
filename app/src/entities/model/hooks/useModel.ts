@@ -2,16 +2,17 @@
 
 import useSWR from 'swr'
 
-import { ModelsShow200 } from '@/src/shared/api/model'
-import { getModelsShowKey, modelsShow } from '@/src/shared/api/swr'
+import { Model, User } from '@/src/shared/api/_models'
+import { findModelById, getFindModelByIdKey } from '@/src/shared/api/swr'
 
 import { useAuthUser } from '../../auth-user/hooks/useAuthUser'
 
-export const useModel = (initialModel?: ModelsShow200) => {
+export const useModel = (initialModel?: Model) => {
   const { data: dataUser } = useAuthUser()
+
   const { data, mutate, isLoading, isValidating } = useSWR(
-    getModelsShowKey(initialModel?.data?.uuid ?? ''),
-    () => modelsShow(initialModel?.data?.uuid ?? ''),
+    getFindModelByIdKey(initialModel?.id ?? ''),
+    () => findModelById(initialModel?.id ?? ''),
     {
       isPaused() {
         return !initialModel
@@ -21,12 +22,14 @@ export const useModel = (initialModel?: ModelsShow200) => {
     },
   )
 
+  const author = data?.author as User
+
   return {
     data,
     mutate,
     isLoading,
     isValidating,
     isLoadingOrValidating: isLoading || isValidating,
-    isMyModel: dataUser?.data?.id === data?.data?.author?.id,
+    isMyModel: dataUser?.user?.id === author?.id,
   }
 }

@@ -1,29 +1,34 @@
 import { mutate } from 'swr'
 
-import { profileUpdateAccount } from '@/src/shared/api/fetch'
-import { ProfileUpdateAccount200, ProfileUpdateAccountBody } from '@/src/shared/api/model'
-import { getProfileKey } from '@/src/shared/api/swr'
+import { getCurrentUserKey } from '@/src/entities/auth-user/api/swr'
+import { UserPatchRequestBodyBody, UserResponseResponse } from '@/src/shared/api/_models'
+import { updateUser } from '@/src/shared/api/fetch'
 import { handleError } from '@/src/shared/lib/handleError'
 import { logger } from '@/src/shared/lib/logger'
-import { IBaseAction, IFormResponseErrors } from '@/src/shared/model'
+import { IBaseAction, IErrors } from '@/src/shared/model'
 
-export async function updateProfileAccount(prevState: IBaseAction, body: ProfileUpdateAccountBody) {
+export async function updateProfileAccount(
+  prevState: IBaseAction,
+  body: UserPatchRequestBodyBody & { id: string },
+) {
   try {
-    const response = (await profileUpdateAccount(body)) as ProfileUpdateAccount200 &
-      IFormResponseErrors
+    const response = (await updateUser(body.id, body)) as unknown as {
+      doc: UserResponseResponse
+      errors?: IErrors
+    }
 
     if (!response?.errors) {
-      mutate(getProfileKey(), { data: response.data })
+      mutate(getCurrentUserKey(), { user: response.doc })
 
       return {
         isError: false,
         isSuccess: true,
-        data: response,
+        data: response.doc,
         errors: null,
       }
-    } else {
-      logger.error(handleError(response))
     }
+
+    logger.error(handleError(response))
 
     return {
       isError: true,

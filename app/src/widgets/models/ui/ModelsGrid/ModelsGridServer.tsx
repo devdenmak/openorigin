@@ -1,15 +1,15 @@
 import { getTranslations } from 'next-intl/server'
 
 import { MODELS_TAG } from '@/src/entities/model/config'
-import { modelsList } from '@/src/shared/api/fetch'
-import { ModelsListParams } from '@/src/shared/api/model'
+import { ListModelsParams } from '@/src/shared/api/_models'
+import { listModels } from '@/src/shared/api/fetch'
 import { ModelsGridClient } from '@/src/widgets/models/ui/ModelsGrid/ModelsGridClient'
 
 import { ModelsGridPagination } from './ModelsGridPagination'
 
 export type IModelsGridProps = {
   className?: string
-  query?: ModelsListParams
+  query?: ListModelsParams
   disablePagination?: boolean
 }
 
@@ -20,28 +20,29 @@ const ModelsGridServer = async ({
 }: IModelsGridProps) => {
   const t = await getTranslations('Common')
 
-  const response = await modelsList(query, {
+  const response = await listModels(query, {
     fetchConfig: {
       tags: [MODELS_TAG],
     },
   })
 
-  const { meta } = response
-
-  const hasPagination = meta?.per_page && meta?.total ? meta?.per_page < meta?.total : false
+  const hasPagination =
+    response.limit && response.totalDocs ? response.limit < response.totalDocs : false
   const showPagination = !disablePagination && hasPagination
 
   return (
     <>
       <section className={className}>
-        {response?.data?.length ? (
+        {response.docs.length ? (
           <ModelsGridClient models={response} query={query} />
         ) : (
           <>{t('noData')}</>
         )}
       </section>
 
-      {showPagination && <ModelsGridPagination className="mt-8 flex justify-center" meta={meta} />}
+      {showPagination && (
+        <ModelsGridPagination className="mt-8 flex justify-center" models={response} />
+      )}
     </>
   )
 }

@@ -1,7 +1,7 @@
 import { stringify } from 'qs'
 import { Suspense } from 'react'
 
-import { ModelsListParams } from '@/src/shared/api/model'
+import { ListModelsParams } from '@/src/shared/api/_models'
 import { deleteEmptyKeys } from '@/src/shared/lib/deleteEmptyKeys'
 import { Skeleton } from '@/src/shared/ui/Skeleton'
 
@@ -9,7 +9,7 @@ import ModelsGridServer from './ModelsGridServer'
 
 export type IModelsGridProps = {
   className?: string
-  query?: ModelsListParams
+  query?: ListModelsParams
 }
 
 const gridClasses = 'grid grid-cols-2 gap-3 max-lg:grid-cols-1'

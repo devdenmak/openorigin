@@ -1,12 +1,17 @@
-import { premiumSubscriptionSubscribe } from '@/src/shared/api/fetch'
-import { PremiumSubscriptionSubscribeBody } from '@/src/shared/api/model'
+import {
+  NewPremiumSubscriptionResponseResponse,
+  PremiumSubscriptionRequestBodyBody,
+} from '@/src/shared/api/_models'
+import { createPremiumSubscription } from '@/src/shared/api/fetch'
 import { handleError } from '@/src/shared/lib/handleError'
 import { logger } from '@/src/shared/lib/logger'
-import { IBaseAction, IFormResponseErrors } from '@/src/shared/model'
+import { IBaseAction, IErrors } from '@/src/shared/model'
 
-export async function subscribePremium(_: IBaseAction, body: PremiumSubscriptionSubscribeBody) {
+export async function subscribePremium(_: IBaseAction, body: PremiumSubscriptionRequestBodyBody) {
   try {
-    const response = (await premiumSubscriptionSubscribe(body)) as unknown as IFormResponseErrors
+    const response = (await createPremiumSubscription(
+      body,
+    )) as NewPremiumSubscriptionResponseResponse & { errors?: IErrors }
 
     if (!response?.errors) {
       return {
@@ -15,9 +20,9 @@ export async function subscribePremium(_: IBaseAction, body: PremiumSubscription
         data: response,
         errors: null,
       }
-    } else {
-      logger.error(handleError(response))
     }
+
+    logger.error(handleError(response))
 
     return {
       isError: true,

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 import type { Config } from 'tailwindcss'
 
 import { backgroundImage } from './app/src/app/tokens/backgroundImage'

@@ -1,10 +1,14 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client'
 
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import { useEffect } from 'react'
 import { useFormState, useFormStatus } from 'react-dom'
+import { toast } from 'sonner'
 
 import { useAuthUser } from '@/src/entities/auth-user/hooks/useAuthUser'
+import { IBaseAction } from '@/src/shared/model'
 import { Button } from '@/src/shared/ui/Button'
 import {
   Dialog,
@@ -22,14 +26,32 @@ import { deleteAccount } from '../api'
 
 const DeleteAccountDialog = () => {
   const router = useRouter()
-  const [, actionDelete] = useFormState(deleteAccount, null)
   const t = useTranslations()
-  const { isPreviewMode } = useAuthUser()
+  const { isPreviewMode, data } = useAuthUser()
 
-  const handleAction = () => {
-    actionDelete()
-    router.push('/sign-in')
-  }
+  const [state, actionDelete] = useFormState<IBaseAction, string>(deleteAccount, {
+    isError: false,
+    isSuccess: false,
+    data: null,
+    errors: null,
+  })
+
+  useEffect(() => {
+    if (state.isSuccess) {
+      router.push('/sign-in')
+      return
+    }
+
+    if (state.isError) {
+      if (Array.isArray(state.errors) && state.errors.length > 0) {
+        state.errors.forEach((error) => {
+          toast.error(error.message || t('Common.toaster.error'))
+        })
+      } else {
+        toast.error(t('Common.toaster.error'))
+      }
+    }
+  }, [state.isSuccess, state.isError, state.errors])
 
   return (
     <section className="pb-2">
@@ -57,7 +79,7 @@ const DeleteAccountDialog = () => {
             )}
           </DialogHeader>
 
-          <form action={() => handleAction()}>
+          <form action={() => actionDelete(data?.user?.id ?? '')}>
             <DialogFooter>
               <DialogClose asChild>
                 <Button className="w-full" size="lg" type="button" variant="third">

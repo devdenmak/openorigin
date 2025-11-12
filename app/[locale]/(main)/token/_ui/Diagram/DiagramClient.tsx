@@ -3,13 +3,13 @@
 import { useFormatter } from 'next-intl'
 import { Pie, PieChart } from 'recharts'
 
-import { WidgetsTokenUtility200DataItem } from '@/src/shared/api/model'
+import { TokenUtility } from '@/src/shared/api/_models'
 import { ChartConfig, ChartContainer, ChartLegend, ChartLegendContent } from '@/src/shared/ui/Chart'
 
 import { colors } from '../../_config'
 
 export type IDiagramClientProps = {
-  data: WidgetsTokenUtility200DataItem[]
+  data: TokenUtility[]
 }
 
 const DiagramClient = ({ data }: IDiagramClientProps) => {
@@ -20,8 +20,8 @@ const DiagramClient = ({ data }: IDiagramClientProps) => {
     .reduce(
       (a, v, i) => ({
         ...a,
-        [v.token_use]: {
-          label: v.token_use,
+        [v.tokenUse]: {
+          label: v.tokenUse,
           color: colors[i] ?? colors[0],
         },
       }),
@@ -44,8 +44,8 @@ const DiagramClient = ({ data }: IDiagramClientProps) => {
           label={(entry) => format.number(entry.percent, 'percent')}
           isAnimationActive={false}
           data={chartData}
-          dataKey="total_supply"
-          nameKey="token_use"
+          dataKey="totalSupply"
+          nameKey="tokenUse"
           innerRadius="47%"
           paddingAngle={1}
           cornerRadius="10%"

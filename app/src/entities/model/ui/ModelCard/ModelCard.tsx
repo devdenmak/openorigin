@@ -1,13 +1,13 @@
 import { useTranslations } from 'next-intl'
 
-import { ModelsMy200DataItem } from '@/src/shared/api/model'
+import { Model, Tag, User } from '@/src/shared/api/_models'
 import { cn } from '@/src/shared/lib/tailwindUtils'
 import { AvatarEmoji } from '@/src/shared/ui/AvatarEmoji'
 
 export type IModelCardProps = {
   className?: string
-  idx: number
-  model: ModelsMy200DataItem
+  idx: number | string
+  model: Model
   slotDetails?: React.ReactNode
   slotLike?: React.ReactNode
 }
@@ -15,9 +15,12 @@ export type IModelCardProps = {
 const ModelCard = ({ className, model, idx, slotDetails, slotLike }: IModelCardProps) => {
   const t = useTranslations('Common.date')
 
-  const { emoji, author, name, tag, type, updated_at } = model
+  const { emoji, author, name, tag, modelType: type, updatedAt } = model
 
-  const dateTime = new Date(updated_at)
+  const dateTime = new Date(updatedAt)
+
+  const modelAuthor = author as User
+  const modelTag = tag as Tag
 
   return (
     <article
@@ -35,13 +38,13 @@ const ModelCard = ({ className, model, idx, slotDetails, slotLike }: IModelCardP
               {name}
             </h2>
             <div className="mt-0.5 truncate font-main text-2xs font-medium text-text-fourth">
-              {author.username}
+              {modelAuthor.username}
             </div>
           </div>
         </div>
 
         <div className="inline-flex shrink-0 truncate rounded-2xl bg-surface-fourth px-3 py-1 font-main text-2xs font-medium text-text-secondary">
-          {tag.name}
+          {modelTag.name}
         </div>
       </div>
 
@@ -50,7 +53,7 @@ const ModelCard = ({ className, model, idx, slotDetails, slotLike }: IModelCardP
       <div className="flex justify-between">
         <time
           className="mr-3 mt-0.5 block font-main text-2xs font-medium text-text-fifth"
-          dateTime={updated_at}
+          dateTime={updatedAt}
         >
           {t('updated', {
             updatedDate: dateTime,

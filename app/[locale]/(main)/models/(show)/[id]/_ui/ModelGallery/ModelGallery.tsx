@@ -1,7 +1,8 @@
 'use client'
 
+import { BACKEND_URL } from '@/src/app/config/env'
 import { useModel } from '@/src/entities/model/hooks/useModel'
-import { ModelsShow200 } from '@/src/shared/api/model'
+import { Image, Model, ModelImagesItem } from '@/src/shared/api/_models'
 import { cn } from '@/src/shared/lib/tailwindUtils'
 import {
   Carousel,
@@ -10,23 +11,22 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/src/shared/ui/Carousel'
-import { Image } from '@/src/shared/ui/Image'
+import { Image as NextImage } from '@/src/shared/ui/Image'
 
 export type IModelGalleryProps = {
   className?: string
-  model: ModelsShow200
+  model: Model
 }
 
 const ModelGallery = ({ className, model }: IModelGalleryProps) => {
   const { data } = useModel(model)
 
-  const _model = (data?.data ?? {}) as ModelsShow200['data']
+  const _model = (data ?? {}) as Model
+  const hasGallery = _model.images && _model.images.length
 
-  const hasGallery = _model.gallery && _model.gallery.length
+  if (!hasGallery) return
 
-  if (!hasGallery) {
-    return
-  }
+  const gallery = _model.images as ModelImagesItem[]
 
   return (
     <section className={cn(className)}>
@@ -34,18 +34,22 @@ const ModelGallery = ({ className, model }: IModelGalleryProps) => {
         <CarouselPrevious />
 
         <CarouselContent>
-          {_model.gallery.map((slide, key) => (
-            <CarouselItem key={slide.uuid} className="basis-1/4 max-xl:basis-1/3 max-md:basis-1/2">
-              <Image
-                className="overflow-hidden rounded-md"
-                fillParent
-                alt={`slide-${key}`}
-                src={slide.url}
-                width={350}
-                height={219}
-              />
-            </CarouselItem>
-          ))}
+          {gallery.map((item, key) => {
+            const slide = item as Image
+
+            return (
+              <CarouselItem key={slide.id} className="basis-1/4 max-xl:basis-1/3 max-md:basis-1/2">
+                <NextImage
+                  className="overflow-hidden rounded-md"
+                  fillParent
+                  alt={`slide-${key}`}
+                  src={`${BACKEND_URL}${slide.url}`}
+                  width={350}
+                  height={219}
+                />
+              </CarouselItem>
+            )
+          })}
         </CarouselContent>
 
         <CarouselNext />

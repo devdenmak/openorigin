@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl'
 
+import { BACKEND_URL } from '@/src/app/config/env'
 import { cn } from '@/src/shared/lib/tailwindUtils'
 import { Avatar } from '@/src/shared/ui/Avatar'
 import {
@@ -48,12 +49,12 @@ const Viewer = ({ className = '', slotToLogin, slotLogoutButton }: IAuthProps) =
                 <Avatar
                   size="sm"
                   className="mr-3 max-lg:mr-0"
-                  src={data?.data?.avatar?.url}
-                  alt={data?.data?.name ?? ''}
+                  src={data?.user?.avatar?.url ? `${BACKEND_URL}${data?.user?.avatar?.url}` : null}
+                  alt={data?.user?.name ?? ''}
                 />
 
                 <div className="max-w-28 grow truncate font-main text-base font-medium max-lg:hidden">
-                  {data?.data?.name}
+                  {data?.user?.name}
                 </div>
               </div>
 

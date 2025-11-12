@@ -32,8 +32,8 @@ const AccountForm = () => {
     }),
 
     initialValues: {
-      username: data?.data?.username ?? '',
-      email: data?.data?.email ?? '',
+      username: data?.user?.username ?? '',
+      email: data?.user?.email ?? '',
     },
 
     showToasts: true,
@@ -46,7 +46,7 @@ const AccountForm = () => {
         <form
           noValidate
           // @ts-ignore
-          action={form.handleSubmit((values) => action(values))}
+          action={form.handleSubmit((values) => action({ id: data?.user?.id, ...values }))}
           className="space-y-6 max-lg:space-y-4"
         >
           <FormField

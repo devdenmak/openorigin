@@ -10,27 +10,22 @@ module.exports = {
     'selector-no-vendor-prefix': null,
     'order/order': [
       'declarations',
-      // Медиаусловия
       {
         type: 'at-rule',
         name: 'media',
       },
-      // Псевдоселекторы и псевдоэлементы
       {
         type: 'rule',
         selector: '^&:\\w+$',
       },
-      // Сторонние вложенные селекторы
       {
         type: 'rule',
         selector: '^\\.[-_a-zA-Z0-9]+',
       },
-      // Элементы блока
       {
         type: 'rule',
         selector: '^&__[-a-z0-9]+',
       },
-      // Модификаторы блока
       {
         type: 'rule',
         selector: '^&--[-a-z0-9]+',

@@ -1,5 +1,6 @@
 'use client'
 
+import { BACKEND_URL } from '@/src/app/config/env'
 import { cn } from '@/src/shared/lib/tailwindUtils'
 import { Avatar } from '@/src/shared/ui/Avatar'
 import { Skeleton } from '@/src/shared/ui/Skeleton'
@@ -28,14 +29,18 @@ const UserPreview = ({ className = '' }: IUserPreviewProps) => {
 
   return (
     <section className={cn('flex items-center', className)}>
-      <Avatar className="mr-2.5" src={data?.data?.avatar?.url} alt={data?.data?.name ?? ''} />
+      <Avatar
+        className="mr-2.5"
+        src={data?.user?.avatar?.url ? `${BACKEND_URL}${data?.user?.avatar?.url}` : null}
+        alt={data?.user?.name ?? ''}
+      />
 
       <div className="min-w-0 space-y-0.5 text-text-secondary">
         <div className="truncate font-headings text-lg font-semibold max-md:text-base">
-          {data?.data?.name}
+          {data?.user?.name}
         </div>
-        {data?.data?.username && (
-          <div className="truncate text-base max-md:text-xs">{data?.data?.username}</div>
+        {data?.user?.username && (
+          <div className="truncate text-base max-md:text-xs">{data?.user?.username}</div>
         )}
       </div>
     </section>

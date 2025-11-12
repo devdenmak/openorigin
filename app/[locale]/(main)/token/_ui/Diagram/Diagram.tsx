@@ -1,23 +1,26 @@
 import { getTranslations } from 'next-intl/server'
 
 import DiagramClient from '@/[locale]/(main)/token/_ui/Diagram/DiagramClient'
-import { widgetsTokenUtility } from '@/src/shared/api/fetch'
+import { getApiGlobalsSettings, listTokenUtilities } from '@/src/shared/api/fetch'
 import { cn } from '@/src/shared/lib/tailwindUtils'
 import { Title } from '@/src/shared/ui/Title'
 
-// import { statistics } from '../../_config'
+import { statistics } from '../../_config'
 
 export type IDiagramProps = {
   className?: string
 }
 
 const Diagram = async ({ className }: IDiagramProps) => {
-  const { data, settings } = await widgetsTokenUtility()
-
-  if (!data.length) return
-
-  const sum = data.reduce((partialSum, a) => partialSum + a.total_supply, 0)
   const t = await getTranslations('TokenPage')
+
+  const { docs } = await listTokenUtilities({ limit: 100 })
+  const { currentSupply } = await getApiGlobalsSettings()
+
+  if (!docs.length) return
+
+  const sum = docs.reduce((partialSum, a) => partialSum + a.totalSupply, 0)
+  const supply = currentSupply as string
 
   return (
     <section
@@ -43,11 +46,11 @@ const Diagram = async ({ className }: IDiagramProps) => {
           </Title>
 
           <p className="font-headings text-2xl font-semibold text-text-primary max-md:text-xl">
-            {settings.current_supply.toLocaleString()}
+            {supply.toLocaleString()}
           </p>
         </div>
 
-        {/* {statistics.map((key) => (
+        {statistics.map((key) => (
           <div className="space-y-1.5 max-lg:w-1/3 max-lg:px-3 max-md:w-full max-md:pb-7" key={key}>
             <Title className="text-accent-300" tag="h4" size="3xs">
               {t(`statistics.${key}.title`)}
@@ -57,11 +60,11 @@ const Diagram = async ({ className }: IDiagramProps) => {
               {t(`statistics.${key}.text`)}
             </p>
           </div>
-        ))} */}
+        ))}
       </div>
 
       <div className="flex-1">
-        <DiagramClient data={data} />
+        <DiagramClient data={docs} />
       </div>
 
       <div className="absolute -bottom-2/4 -right-1/4 -z-1 size-72 -translate-x-1/4 -translate-y-1/4 bg-gradient-blur-to-r opacity-40 blur-8xl"></div>

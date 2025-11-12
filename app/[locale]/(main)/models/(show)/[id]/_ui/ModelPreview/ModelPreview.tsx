@@ -2,24 +2,28 @@
 
 import { useTranslations } from 'next-intl'
 
+import { ModelWithFavorites } from '@/src/entities/model/api/types'
 import { useModel } from '@/src/entities/model/hooks/useModel'
 import { LikeButton } from '@/src/features/model/like-model/ui/LikeButton'
-import { ModelsShow200 } from '@/src/shared/api/model'
+import { Model, User } from '@/src/shared/api/_models'
 import { cn } from '@/src/shared/lib/tailwindUtils'
 import { AvatarEmoji } from '@/src/shared/ui/AvatarEmoji'
 import { Title } from '@/src/shared/ui/Title'
 
 export type IModelPreviewProps = {
   className?: string
-  model: ModelsShow200
+  model: Model
 }
 
 const ModelPreview = ({ className, model }: IModelPreviewProps) => {
   const t = useTranslations('Common')
 
   const { data } = useModel(model)
-  const _model = (data?.data ?? {}) as ModelsShow200['data']
-  const dateTime = new Date(_model.updated_at)
+
+  const _model = (data ?? {}) as ModelWithFavorites
+
+  const dateTime = new Date(_model.updatedAt)
+  const author = _model?.author as User
 
   return (
     <section className={cn(className)}>
@@ -40,9 +44,9 @@ const ModelPreview = ({ className, model }: IModelPreviewProps) => {
               </Title>
 
               <div className="flex gap-x-5">
-                {_model?.author?.username && (
+                {author && (
                   <div className="relative flex min-w-0 max-w-full font-main text-lg font-normal text-text-third max-md:text-base">
-                    <span className="max-w-full truncate">{_model?.author?.username}</span>
+                    <span className="max-w-full truncate">{author.username}</span>
 
                     <span className="absolute -right-3 top-2.5 block size-1 rounded-full bg-text-third max-md:hidden"></span>
                   </div>
@@ -50,7 +54,7 @@ const ModelPreview = ({ className, model }: IModelPreviewProps) => {
 
                 <time
                   className="block shrink-0 font-main text-lg font-normal text-text-third max-md:absolute max-md:bottom-0 max-md:left-0 max-md:truncate max-md:text-base"
-                  dateTime={_model.updated_at}
+                  dateTime={author.updatedAt}
                 >
                   {t('date.lastUpdated', {
                     updatedDate: dateTime,
@@ -63,9 +67,9 @@ const ModelPreview = ({ className, model }: IModelPreviewProps) => {
               <LikeButton
                 hasLikeText
                 className="flex-row-reverse text-base"
-                id={_model.uuid}
-                isFavorite={_model.is_favorite}
-                count={_model.favorite_count}
+                id={_model.id}
+                isFavorite={_model.isFavorite}
+                count={_model.favoriteCount}
               />
             </div>
           </div>

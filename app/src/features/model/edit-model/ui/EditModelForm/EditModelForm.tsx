@@ -4,11 +4,12 @@ import { useTranslations } from 'next-intl'
 import { useFormStatus } from 'react-dom'
 import { z } from 'zod'
 
+import { useAuthUser } from '@/src/entities/auth-user/hooks/useAuthUser'
 import { useModel } from '@/src/entities/model/hooks/useModel'
 import { createModel } from '@/src/features/model/edit-model/api/createModel'
 import { editModel } from '@/src/features/model/edit-model/api/editModel'
-import { ModelsCreateBodyAvailability, ModelsShow200 } from '@/src/shared/api/model'
-import { useModelTagsList } from '@/src/shared/api/swr'
+import { Image, Model, ModelAvailability, Tag, User } from '@/src/shared/api/_models'
+import { useListCategories } from '@/src/shared/api/swr'
 import { useActionForm } from '@/src/shared/hooks/useActionForm'
 import { cn } from '@/src/shared/lib/tailwindUtils'
 import { Button, buttonVariants } from '@/src/shared/ui/Button'
@@ -38,40 +39,53 @@ import {
 
 export type IEditModelFormProps = {
   className?: string
-  model?: ModelsShow200
+  model?: Model
 }
 
 const gallerySchema = z.object({
   url: z.string(),
-  file: z.instanceof(File).optional(),
-  uuid: z.string(),
+  file: z.instanceof(File).nullable(),
+  id: z.union([z.string(), z.number()]),
+  filename: z.string(),
 })
 
 const formSchema = z.object({
   id: z.string(),
   name: z.string().min(1),
-  type: z.string().min(1),
+  modelType: z.string().min(1),
   license: z.string().min(1),
-  finetuned_from: z.string(),
+  finetunedFrom: z.string(),
   languages: z.string().min(1),
-  category_id: z.string().min(1),
-  tag_id: z.string().min(1),
+  category: z.string().min(1),
+  tag: z.string().min(1),
   availability: z.enum(['public', 'private', 'premium']),
   link: z.string().min(1),
   emoji: z.string(),
   description: z.string().min(1),
-  gallery: z.array(gallerySchema),
+  images: z.array(gallerySchema),
+  author: z.string().min(1),
 })
 
 const EditModelForm = ({ className, model }: IEditModelFormProps) => {
   const t = useTranslations()
-  const { data: initialValues, isMyModel } = useModel(model)
-  const { data: tags } = useModelTagsList()
+  const { data: authUser } = useAuthUser()
 
-  const optionsCategories = tags?.data ?? []
+  const { data: initialValues, isMyModel } = useModel(model)
+  const { data: categories } = useListCategories()
+
+  const initialTag = initialValues?.tag as Tag
+  const initialImages = initialValues?.images ?? []
+
+  const optionsCategories = categories?.docs ?? []
+  const author = initialValues?.author as User
+
   const initialCategory =
     optionsCategories
-      .find((category) => category.tags.find((tag) => tag.id === initialValues?.data?.tag?.id))
+      .find((category) => {
+        const tags = (category?.tags?.docs ?? []) as Tag[]
+
+        return tags.find((tag) => tag.id === initialTag?.id)
+      })
       ?.id?.toString() ?? ''
 
   const isEditMode = !!initialValues
@@ -84,19 +98,30 @@ const EditModelForm = ({ className, model }: IEditModelFormProps) => {
     redirectTo: '/profile/models',
 
     initialValues: {
-      id: initialValues?.data?.uuid ?? '',
-      name: initialValues?.data?.name ?? '',
-      type: initialValues?.data?.type ?? '',
-      license: initialValues?.data?.license ?? '',
-      finetuned_from: initialValues?.data?.finetuned_from ?? '',
-      languages: initialValues?.data?.languages ?? '',
-      category_id: initialCategory ?? '',
-      tag_id: initialValues?.data?.tag?.id?.toString() ?? '',
-      availability: (initialValues?.data?.availability ?? 'public') as ModelsCreateBodyAvailability,
-      link: initialValues?.data?.link ?? '',
-      emoji: initialValues?.data?.emoji ?? '',
-      description: initialValues?.data?.description ?? '',
-      gallery: initialValues?.data?.gallery ?? [],
+      id: initialValues?.id?.toString() ?? '',
+      name: initialValues?.name ?? '',
+      modelType: initialValues?.modelType ?? '',
+      license: initialValues?.license ?? '',
+      finetunedFrom: initialValues?.finetunedFrom ?? '',
+      languages: initialValues?.languages ?? '',
+      category: initialCategory ?? '',
+      tag: initialTag?.id?.toString() ?? '',
+      availability: initialValues?.availability ?? 'public',
+      link: initialValues?.link ?? '',
+      emoji: initialValues?.emoji ?? '🤖',
+      description: initialValues?.description ?? '',
+      author: author?.id?.toString() ?? authUser?.user?.id?.toString() ?? '',
+
+      images: initialImages.map((galleryImage) => {
+        const image = galleryImage as Image & { file: File }
+
+        return {
+          id: image.id ?? '',
+          filename: image.filename ?? '',
+          url: image.url ?? '',
+          file: image.file ?? null,
+        }
+      }),
     },
 
     firstInputFocus: isEditMode,
@@ -105,26 +130,28 @@ const EditModelForm = ({ className, model }: IEditModelFormProps) => {
 
   const availabiltyOptions = [
     {
-      value: ModelsCreateBodyAvailability.public,
+      value: ModelAvailability.public,
       name: t('Common.fields.input.avalability.title.public'),
       label: t('Common.fields.input.avalability.placeholder.public'),
     },
     // {
-    //   value: ModelsCreateBodyAvailability.private,
+    //   value: ModelAvailability.private,
     //   name: t('Common.fields.input.avalability.title.private'),
     //   label: t('Common.fields.input.avalability.placeholder.private'),
     // },
 
     // {
-    //   value: ModelsCreateBodyAvailability.premium,
+    //   value: ModelAvailability.premium,
     //   name: t('Common.fields.input.avalability.title.premium'),
     //   label: t('Common.fields.input.avalability.placeholder.premium'),
     // },
   ]
 
-  const selectedCategoryId = form.watch('category_id')
-  const optionsTags =
-    optionsCategories.find((category) => category.id.toString() === selectedCategoryId)?.tags ?? []
+  const selectedCategoryId = form.watch('category')
+  const selectedCategory = optionsCategories.find(
+    (category) => category.id.toString() === selectedCategoryId,
+  )
+  const optionsTags = (selectedCategory?.tags?.docs ?? selectedCategory?.tags ?? []) as Tag[]
 
   return (
     <Form {...form}>
@@ -157,7 +184,7 @@ const EditModelForm = ({ className, model }: IEditModelFormProps) => {
 
             <FormField
               control={form.control}
-              name="type"
+              name="modelType"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t('Common.fields.input.modelType.title.simple')}</FormLabel>
@@ -196,7 +223,7 @@ const EditModelForm = ({ className, model }: IEditModelFormProps) => {
 
               <FormField
                 control={form.control}
-                name="finetuned_from"
+                name="finetunedFrom"
                 render={({ field }) => (
                   <FormItem className="w-1/2 max-md:w-full">
                     <FormLabel>{t('Common.fields.input.finetuned.title.optional')}</FormLabel>
@@ -236,7 +263,7 @@ const EditModelForm = ({ className, model }: IEditModelFormProps) => {
             <div className="flex gap-6 max-lg:gap-4 max-md:flex-col">
               <FormField
                 control={form.control}
-                name="category_id"
+                name="category"
                 render={({ field }) => (
                   <FormItem className="w-1/2 max-md:w-full">
                     <FormLabel>{t('Common.fields.input.category.title.simple')}</FormLabel>
@@ -244,15 +271,17 @@ const EditModelForm = ({ className, model }: IEditModelFormProps) => {
                     <Select
                       onValueChange={(val) => {
                         field.onChange(val)
-                        form.setValue('tag_id', '')
+                        form.setValue('tag', '')
                       }}
                       value={field.value}
                     >
-                      <SelectTrigger size="md">
-                        <SelectValue
-                          placeholder={t('Common.fields.input.category.placeholder.select')}
-                        />
-                      </SelectTrigger>
+                      <FormControl>
+                        <SelectTrigger size="md" ref={field.ref}>
+                          <SelectValue
+                            placeholder={t('Common.fields.input.category.placeholder.select')}
+                          />
+                        </SelectTrigger>
+                      </FormControl>
 
                       <SelectContent>
                         {optionsCategories.map(({ id, name }) => (
@@ -270,21 +299,23 @@ const EditModelForm = ({ className, model }: IEditModelFormProps) => {
 
               <FormField
                 control={form.control}
-                name="tag_id"
+                name="tag"
                 render={({ field }) => (
                   <FormItem className="w-1/2 max-md:w-full">
                     <FormLabel>{t('Common.fields.input.useCase.title.simple')}</FormLabel>
 
                     <Select
-                      disabled={!form.getValues('category_id')}
+                      disabled={!form.getValues('category')}
                       onValueChange={field.onChange}
                       value={field.value}
                     >
-                      <SelectTrigger size="md">
-                        <SelectValue
-                          placeholder={t('Common.fields.input.useCase.placeholder.select')}
-                        />
-                      </SelectTrigger>
+                      <FormControl>
+                        <SelectTrigger size="md" ref={field.ref}>
+                          <SelectValue
+                            placeholder={t('Common.fields.input.useCase.placeholder.select')}
+                          />
+                        </SelectTrigger>
+                      </FormControl>
 
                       <SelectContent>
                         {optionsTags.map(({ id, name }) => (
@@ -381,7 +412,7 @@ const EditModelForm = ({ className, model }: IEditModelFormProps) => {
 
             <FormField
               control={form.control}
-              name="gallery"
+              name="images"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t('Common.fields.input.gallery.title.simple')}</FormLabel>
