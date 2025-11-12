@@ -4,7 +4,7 @@
 import { useEffect, useState, useSyncExternalStore } from 'react'
 import { preload } from 'swr'
 
-import { PREVIEW_MODE_USER_NAME } from '@/src/app/config/constants'
+// import { PREVIEW_MODE_USER_NAME } from '@/src/app/config/constants'
 import { currentUser } from '@/src/entities/auth-user/api/fetch'
 import { getCurrentUserKey, useCurrentUser } from '@/src/entities/auth-user/api/swr'
 import { getSessionToken, subscribe } from '@/src/shared/api/store'
@@ -39,7 +39,8 @@ export const useAuthUser = () => {
   const _isLoading = !tokenInit || isLoading
 
   return {
-    isPreviewMode: data?.user?.username === PREVIEW_MODE_USER_NAME,
+    // isPreviewMode: data?.user?.username === PREVIEW_MODE_USER_NAME,
+    isPreviewMode: false,
     data,
     mutate,
     isAuth: !!token && !!data?.user,

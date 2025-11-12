@@ -2,12 +2,17 @@ import { Metadata } from 'next'
 import { getTranslations, unstable_setRequestLocale } from 'next-intl/server'
 
 import { ILang } from '@/src/app/model'
-import { ListModelsParams } from '@/src/shared/api/_models'
+import { mapQueryToPayload } from '@/src/entities/model/lib/mapQueryToPayload'
 import { ModelsGrid } from '@/src/widgets/models/ui/ModelsGrid'
 
 type IProps = {
   params: { locale: ILang }
-  searchParams: ListModelsParams
+  searchParams: {
+    availability?: string
+    tag_id?: string
+    page?: string
+    q?: string
+  }
 }
 
 export async function generateMetadata({ params: { locale } }: IProps): Promise<Metadata> {
@@ -24,5 +29,7 @@ export async function generateMetadata({ params: { locale } }: IProps): Promise<
 export default function ModelsPage({ params: { locale }, searchParams }: IProps) {
   unstable_setRequestLocale(locale)
 
-  return <ModelsGrid className="flex grow flex-col justify-between" query={searchParams} />
+  const payloadQuery = mapQueryToPayload(searchParams)
+
+  return <ModelsGrid className="flex grow flex-col justify-between" query={payloadQuery} />
 }

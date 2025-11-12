@@ -7,5 +7,6 @@ export const scrollToId = async (id: string) => {
 
   await animateScrollTo(element, {
     speed: 100,
+    verticalOffset: -150,
   })
 }

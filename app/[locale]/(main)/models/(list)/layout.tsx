@@ -25,12 +25,14 @@ export default function ModelsLayout({ params: { locale }, children }: IProps) {
 
       <Search className="mb-5 max-md:mb-0" />
 
-      <div id={MODELS_LAYOUT_ID} className="flex gap-5 pt-5 max-lg:block">
+      <div className="flex gap-5 pt-5 max-lg:block">
         <div className="w-[300px] shrink-0 max-lg:w-auto">
           <Categories />
         </div>
 
-        <div className="flex grow flex-col max-lg:mt-8 max-md:mt-5">{children}</div>
+        <div id={MODELS_LAYOUT_ID} className="flex grow flex-col max-lg:mt-8 max-md:mt-5">
+          {children}
+        </div>
       </div>
     </div>
   )
