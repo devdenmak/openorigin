@@ -1,14 +1,14 @@
 export const socials = [
   {
     key: 'twitter',
-    link: 'https://x.com/OpenOriginAI',
+    link: 'https://t.me/devdenmak',
   },
   {
     key: 'telegram',
-    link: 'https://t.me/OpenOriginAI',
+    link: 'https://t.me/devdenmak',
   },
   {
     key: 'linkedin',
-    link: 'https://www.linkedin.com/company/openorigin-ai',
+    link: 'https://t.me/devdenmak',
   },
 ]
